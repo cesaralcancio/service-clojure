@@ -20,5 +20,3 @@
 (clojure.edn/read-string (:body (test-request :get "/tarefa")))
 (test-request :delete "/tarefa/64b92914-c582-4d35-a52b-f7bbf0651e54")
 (test-request :patch "/tarefa/cf277943-a66e-45c4-af6b-3a98c0063e0f?nome=Ler Muito&status=pendente")
-
-; (println @database/store)
