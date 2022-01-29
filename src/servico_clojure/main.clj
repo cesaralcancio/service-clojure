@@ -1,8 +1,8 @@
 (ns servico-clojure.main
-  (:require [servico-clojure.servidor :as servidor]
+  (:require [servico-clojure.components.servidor :as servidor]
             [com.stuartsierra.component :as component]
-            [servico-clojure.database :as database]
-            [servico-clojure.rotas :as rotas])
+            [servico-clojure.components.database :as database]
+            [servico-clojure.components.rotas :as rotas])
   (:use [clojure.pprint]))
 
 (defn my-component-system []
@@ -19,5 +19,17 @@
 (test-request :post "/tarefa?nome=Ler&status=pendente")
 (test-request :post "/tarefa?nome=Estudar&status=feito")
 (clojure.edn/read-string (:body (test-request :get "/tarefa")))
-(test-request :delete "/tarefa/cbc57cfa-490d-47cd-8643-089a66e0eb42")
-(test-request :patch "/tarefa/455279fb-92bc-4c61-9f80-be4e611abf08?nome=TerminarCursoWebAPI&status=feito")
+(def first-tarefa-id (-> (test-request :get "/tarefa")
+                         :body
+                         clojure.edn/read-string
+                         first
+                         key
+                         str))
+(def second-tarefa-id (-> (test-request :get "/tarefa")
+                          :body
+                          clojure.edn/read-string
+                          second
+                          key
+                          str))
+(test-request :delete (str "/tarefa/" first-tarefa-id))
+(test-request :patch (str "/tarefa/" second-tarefa-id "?nome=TerminarCursoWebAPI&status=feito"))

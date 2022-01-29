@@ -1,4 +1,4 @@
-(ns servico-clojure.database
+(ns servico-clojure.components.database
   (:require [com.stuartsierra.component :as component]))
 
 (defrecord Database []
