@@ -23,6 +23,7 @@
   component/Lifecycle
 
   (start [this]
+    (println "Start servidor")
     (let [assoc-store (fn [context]
                         (update context :request assoc :store (:store database)))
           db-interceptor {:name  :db-interceptor

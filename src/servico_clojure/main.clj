@@ -5,13 +5,13 @@
             [servico-clojure.components.rotas :as rotas])
   (:use [clojure.pprint]))
 
-(defn my-component-system []
+(def my-component-system
   (component/system-map
     :database (database/new-database)
     :rotas (rotas/new-rotas)
     :servidor (component/using (servidor/new-servidor) [:database :rotas])))
 
-(def component-result (component/start (my-component-system)))
+(def component-result (component/start my-component-system))
 (def test-request (-> component-result :servidor :test-request))
 
 (test-request :get "/hello?name=Cesar")
