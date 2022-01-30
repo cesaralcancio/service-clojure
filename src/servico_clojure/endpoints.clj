@@ -33,8 +33,10 @@
     {:status 200 :body {:mensagem "Tarefa atualizada com sucesso!"
                         :tarefa   tarefa}}))
 
-(defn listar-tarefas [request]
-  {:status 200 :body @(:store request)})
+(defn listar-tarefas
+  [request]
+  (let [store (:store request)]
+    {:status 200 :body (db.task/find-all store)}))
 
 (defn remover-tarefa [request]
   (let [store (:store request)

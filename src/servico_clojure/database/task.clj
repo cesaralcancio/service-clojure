@@ -5,3 +5,6 @@
 
 (defn delete [store task]
   (swap! store dissoc (:id task)))
+
+(defn find-all [store]
+  (-> @store vals vec))

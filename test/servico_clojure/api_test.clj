@@ -31,14 +31,14 @@
           get-path "/tarefa"
           get-resp (-> :get (test-request get-path))
           get-resp-body (-> get-resp :body clojure.edn/read-string)
-          first-task-id (:id (val (first get-resp-body)))
-          first-task-name (:nome (val (first get-resp-body)))
+          first-task-id (:id (first get-resp-body))
+          first-task-name (:nome (first get-resp-body))
           ;; put and get
           put-path (str "/tarefa/" first-task-id "?nome=CorrerAtualizado&status=feito")
           put-resp (-> :patch (test-request put-path))
           get-after-put-body (-> :get (test-request get-path))
           get-after-put-resp-body (-> get-after-put-body :body clojure.edn/read-string)
-          first-task-name-updated (:nome (val (first get-after-put-resp-body)))
+          first-task-name-updated (:nome (first get-after-put-resp-body))
           ;; delete and get
           delete-path (str "/tarefa/" first-task-id)
           delete-resp (-> :delete (test-request delete-path))
