@@ -1,20 +1,24 @@
 (ns servico-clojure.endpoints
-  (:require [io.pedestal.http.route :as route])
+  (:require [io.pedestal.http.route :as route]
+            [servico-clojure.database.task :as db.task])
   (:import (java.util UUID)))
 
 (defn funcao-hello [request]
   {:status 200 :body (str "Bem vindo!!! " (get-in request [:query-params :name] "Everybody!"))})
 
-(defn criar-tarefa-mapa [uuid nome status]
-  {:id uuid :nome nome :status status})
+(defn task
+  ([uuid nome status]
+   {:id uuid :nome nome :status status})
+  ([uuid]
+   {:id uuid}))
 
 (defn criar-tarefa [request]
   (let [uuid (UUID/randomUUID)
         nome (get-in request [:query-params :nome])
         status (get-in request [:query-params :status])
-        tarefa (criar-tarefa-mapa uuid nome status)
+        tarefa (task uuid nome status)
         store (:store request)]
-    (swap! store assoc uuid tarefa)
+    (db.task/upsert! store tarefa)
     {:status 200 :body {:mensagem "Tarefa registrada com sucesso!"
                         :tarefa   tarefa}}))
 
@@ -23,9 +27,9 @@
         tarefa-id-uuid (UUID/fromString tarefa-id)
         nome (get-in request [:query-params :nome])
         status (get-in request [:query-params :status])
-        tarefa (criar-tarefa-mapa tarefa-id-uuid nome status)
+        tarefa (task tarefa-id-uuid nome status)
         store (:store request)]
-    (swap! store assoc tarefa-id-uuid tarefa)
+    (db.task/upsert! store tarefa)
     {:status 200 :body {:mensagem "Tarefa atualizada com sucesso!"
                         :tarefa   tarefa}}))
 
@@ -35,8 +39,9 @@
 (defn remover-tarefa [request]
   (let [store (:store request)
         tarefa-id (get-in request [:path-params :id])
-        tarefa-id-uuid (UUID/fromString tarefa-id)]
-    (swap! store dissoc tarefa-id-uuid)
+        tarefa-id-uuid (UUID/fromString tarefa-id)
+        task (task tarefa-id-uuid)]
+    (db.task/delete store task)
     {:status 200 :body {:mensagem "Removida com sucesso"}}))
 
 (def routes (route/expand-routes
