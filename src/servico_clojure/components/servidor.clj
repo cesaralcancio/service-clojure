@@ -35,8 +35,16 @@
           service-map (-> service-map-base
                           (http/default-interceptors)
                           (update ::http/interceptors conj (i/interceptor db-interceptor)))]
-      (try (start-server service-map) (catch Exception e (println "Erro ao executar start" (.getMessage e))))
-      (try (restart-server service-map) (catch Exception e (println "Erro ao executar restart" (.getMessage e))))
+      (try
+        (start-server service-map)
+        (println "Server Started successfully!")
+        (catch Exception e
+          (println "Error executing server start: " (.getMessage e))
+          (println "Trying server restart..." (.getMessage e))
+          (try
+            (restart-server service-map)
+            (println "Server Restarted successfully!")
+            (catch Exception e (println "Error executing server restart: " (.getMessage e))))))
       (assoc this :test-request test-request)))
 
   (stop [this]

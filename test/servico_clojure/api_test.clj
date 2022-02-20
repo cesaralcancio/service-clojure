@@ -6,23 +6,26 @@
             [servico-clojure.components.rotas :as rotas])
   (:use [clojure.pprint]))
 
-(def my-component-system
-  (component/system-map
-    :database (database/new-database)
-    :rotas (rotas/new-rotas)
-    :servidor (component/using (servidor/new-servidor) [:database :rotas])))
-
-(def component-result (component/start my-component-system))
-(def test-request (-> component-result :servidor :test-request))
-
 (deftest tarefa-api-test
   (testing "Hello World Testing"
-    (let [path "/hello?name=Cesar"
+    (let [my-component-system (component/system-map
+                                :database (database/new-database)
+                                :rotas (rotas/new-rotas)
+                                :servidor (component/using (servidor/new-servidor) [:database :rotas]))
+          component-result (component/start my-component-system)
+          test-request (-> component-result :servidor :test-request)
+          path "/hello?name=Cesar"
           response (-> :get (test-request path) :body)]
       (is (= "Bem vindo!!! Cesar" response))))
 
   (testing "CRUD Testing"
-    (let [;; post to create
+    (let [my-component-system (component/system-map
+                                :database (database/new-database)
+                                :rotas (rotas/new-rotas)
+                                :servidor (component/using (servidor/new-servidor) [:database :rotas]))
+          component-result (component/start my-component-system)
+          test-request (-> component-result :servidor :test-request)
+          ;; post to create
           post-path "/tarefa?nome=Correr&status=pendente"
           post-resp (-> :post (test-request post-path))
           post-resp-body (-> post-resp :body clojure.edn/read-string)
